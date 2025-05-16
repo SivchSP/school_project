@@ -12,5 +12,18 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
-  }
+  },
+  build: {
+    chunkSizeWarningLimit: 1000, // Увеличиваем лимит до 1000KB
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Пример разделения кода
+          'ton-connect': ['@tonconnect/ui'],
+          'vue-related': ['vue', 'vue-router', 'pinia']
+        }
+      }
+    }
+  },
+  
 })

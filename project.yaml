@@ -1,0 +1,13 @@
+project:
+  name: withdraw-app
+  author: YourName
+
+contracts:
+  withdraw-contract:
+    func: withdraw-contract.fc
+    includes:
+      - func-libs/stdlib.func
+      - func-libs/error_codes.func
+    init:
+      code: .withdraw-contract.fif
+      data: .withdraw-contract.fif

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AMAHASLA</title>
+    <script src="https://unpkg.com/@tonconnect/ui@2.1.0/dist/tonconnect-ui.min.js"></script>
+  </head>
+  <body style="padding: 10px; margin: 0;">
+
+    <div id="connect-button-root" style="width: fit-content; margin-left: auto;"></div>
+
+    <script>
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://github.com/ton-connect/demo-dapp-with-react-ui/blob/master/docs/tonconnect-manifest.json',
+            buttonRootId: 'connect-button-root'
+        });
+        
+    </script>
+  </body>
+</html>

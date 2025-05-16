@@ -1,0 +1,19 @@
+{
+    "name": "withdraw",
+    "version": "0.1.0",
+    "interfaces": [],
+    "abi": {
+      "functions": [
+        {
+          "name": "recv_internal",
+          "inputs": [
+            {"name": "balance", "type": "int"},
+            {"name": "msg_value", "type": "int"},
+            {"name": "in_msg_full", "type": "cell"},
+            {"name": "in_msg_body", "type": "slice"}
+          ],
+          "outputs": []
+        }
+      ]
+    }
+  }

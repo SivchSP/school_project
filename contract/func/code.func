@@ -1,0 +1,23 @@
+(int) equal_slices (slice a, slice b) asm "SDEQ";
+
+() recv_internal(int msg_value, cell in_msg, slice in_msg_body) impure {
+    ;; 1. Проверяем, что отправитель — администратор
+    slice sender = in_msg_body~load_msg_addr();
+    slice admin_address = get_data().begin_parse();
+    if (~ equal_slices(sender, admin_address)) {
+        return (); ;; Если не админ — ничего не делаем
+    }
+
+    ;; 2. Получаем адрес получателя и сумму
+    slice recipient = in_msg_body~load_msg_addr();
+    int amount = in_msg_body~load_coins();
+
+    ;; 3. Отправляем TON на указанный адрес
+    var msg = begin_cell()
+        .store_uint(0x18, 6) ;; флаги (обычный перевод)
+        .store_slice(recipient)
+        .store_coins(amount)
+        .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1) ;; пустое тело сообщения
+        .end_cell();
+    send_raw_message(msg, 64); ;; отправляем с оставшимся газом
+}
