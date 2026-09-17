@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1680×720 | идеально + ✦</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ТОЧНЫЙ РАЗМЕР БАННЕРА 1680×720 */
+        body {
+            width: 1680px;
+            height: 720px;
+            background-color: #030303;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            position: relative;
+            overflow: hidden;
+            /* Тусклая обводка */
+            outline: 1px solid rgba(255, 187, 0, 0.15);
+            outline-offset: -1px;
+        }
+
+        /* Свечение снизу */
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80%;
+            background: radial-gradient(
+                ellipse at 50% 100%,
+                #ffbb00 0%,
+                rgba(255, 187, 0, 0.2) 30%,
+                rgba(255, 187, 0, 0.08) 55%,
+                transparent 80%
+            );
+            filter: blur(70px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Звёзды — теперь их больше */
+        .stars-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.6);
+            font-family: Arial, Helvetica, sans-serif;
+            text-shadow: 0 0 20px rgba(255, 187, 0, 0.4);
+            user-select: none;
+            pointer-events: none;
+            font-size: 16px;
+            opacity: 0.5;
+        }
+
+        /* ОСНОВНОЙ КОНТЕЙНЕР */
+        .banner {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        /* ЛЕВАЯ ЧАСТЬ — ТЕКСТ */
+        .text-section {
+            flex: 0 0 auto;
+            max-width: 700px;
+            margin-left: 40px;
+        }
+
+        .get-text {
+            font-size: 72px;
+            font-weight: 800;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            color: #ffffff;
+            margin-bottom: 0;
+            text-shadow: 0 0 30px rgba(255, 187, 0, 0.3);
+            opacity: 0.95;
+            line-height: 1;
+        }
+
+        .ton-text {
+            font-size: 200px;
+            font-weight: 900;
+            line-height: 0.85;
+            color: #ffffff;
+            text-shadow: 0 0 40px rgba(255, 187, 0, 0.4);
+            letter-spacing: -6px;
+            margin-bottom: 20px;
+            white-space: nowrap;
+        }
+
+        .ton-text span {
+            color: #ffbb00;
+            font-size: 1.2em;
+            margin-left: 15px;
+            text-shadow: 0 0 60px rgba(255, 187, 0, 0.7);
+        }
+
+        .sub-line {
+            font-size: 38px;
+            font-weight: 600;
+            color: #e0e0e0;
+            letter-spacing: 4px;
+            text-transform: lowercase;
+            border-left: 5px solid #ffbb00;
+            padding-left: 30px;
+            margin-top: 15px;
+            text-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+        }
+
+        /* ПРАВАЯ ЧАСТЬ — ИЗОБРАЖЕНИЯ */
+        .images-section {
+            flex: 0 0 auto;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 30px;
+            margin-right: 40px;
+        }
+
+        .gift-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 0 40px rgba(255, 187, 0, 0.25));
+        }
+
+        .gift-item:nth-child(1) {
+            width: 180px;
+            height: 180px;
+            transform: translateY(-20px) rotate(-3deg);
+        }
+        
+        .gift-item:nth-child(2) {
+            width: 240px;
+            height: 240px;
+            transform: translateY(10px) rotate(2deg);
+            z-index: 5;
+        }
+        
+        .gift-item:nth-child(3) {
+            width: 200px;
+            height: 200px;
+            transform: translateY(-15px) rotate(-1deg);
+        }
+
+        .gift-item:hover {
+            transform: scale(1.1) translateY(-20px) rotate(0deg);
+            filter: drop-shadow(0 0 80px rgba(255, 187, 0, 0.6));
+            z-index: 20;
+        }
+
+        .gift-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.7));
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Звёзды — теперь 15 штук для лёгкой атмосферы -->
+    <div class="stars-container" id="starField"></div>
+
+    <!-- Баннер: текст слева, изображения справа -->
+    <div class="banner">
+        <div class="text-section">
+            <div class="get-text">GET</div>
+            <div class="ton-text">0.1 <span>TON</span></div>
+            <div class="sub-line">from any gifts deposits</div>
+        </div>
+
+        <div class="images-section">
+            <div class="gift-item">
+                <img src="https://storage.portal-market.com/portals-market/gifts/minioscar/models/png/pharaoh.png" 
+                     alt="pharaoh"
+                     onerror="this.parentElement.innerHTML='✦';this.parentElement.style.fontSize='5rem';this.parentElement.style.color='#ffbb00';">
+            </div>
+            <div class="gift-item">
+                <img src="https://storage.portal-market.com/portals-market/gifts/swisswatch/models/png/rockefeller.png" 
+                     alt="rockefeller"
+                     onerror="this.parentElement.innerHTML='✦';this.parentElement.style.fontSize='5rem';this.parentElement.style.color='#ffbb00';">
+            </div>
+            <div class="gift-item">
+                <img src="https://storage.portal-market.com/portals-market/gifts/mightyarm/models/png/bestmuscles.png" 
+                     alt="bestmuscles"
+                     onerror="this.parentElement.innerHTML='✦';this.parentElement.style.fontSize='5rem';this.parentElement.style.color='#ffbb00';">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ЗВЁЗД — теперь 15 штук (добавлено 7)
+        (function() {
+            const container = document.getElementById('starField');
+            const starCount = 15; // было 8, стало 15
+            const usedPositions = [];
+
+            function isTooClose(x, y, existing, minDist = 70) {
+                for (let pos of existing) {
+                    const dx = Math.abs(x - pos.x), dy = Math.abs(y - pos.y);
+                    if (Math.sqrt(dx*dx + dy*dy) < minDist) return true;
+                }
+                return false;
+            }
+
+            for (let i = 0; i < starCount; i++) {
+                let x, y, placed = false, attempts = 0;
+                
+                while (!placed && attempts++ < 2000) {
+                    x = Math.random() * 1680;
+                    y = Math.random() * 720;
+                    
+                    // Избегаем центра с контентом
+                    if (x > 400 && x < 1280 && y > 200 && y < 520) continue;
+                    if (!isTooClose(x, y, usedPositions, 80)) {
+                        placed = true;
+                        usedPositions.push({ x, y });
+                    }
+                }
+
+                if (!placed) {
+                    // Распределяем по углам и краям
+                    const corners = [
+                        50, 1630, 50, 1630, 300, 1380, 200, 1480, 100, 1580, 800, 880
+                    ];
+                    x = corners[i * 2 % corners.length] || 840;
+                    y = corners[(i * 2 + 1) % corners.length] || 360;
+                }
+
+                const size = Math.floor(Math.random() * 22) + 14; // 14-36px
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = (x / 1680 * 100) + '%';
+                star.style.top = (y / 720 * 100) + '%';
+                star.style.fontSize = size + 'px';
+                star.style.opacity = 0.2 + Math.random() * 0.4;
+                star.textContent = '✦';
+                container.appendChild(star);
+            }
+        })();
+    </script>
+</body>
+</html>

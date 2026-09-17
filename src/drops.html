@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drops - Загрузка</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #000;
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Initial Loading Spinner Styles */
+        .initial-loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .spinner-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 187, 0, 0.1);
+        }
+
+        .spinner {
+            width: 80px;
+            height: 80px;
+            border: 6px solid rgba(255, 187, 0, 0.2);
+            border-radius: 50%;
+            border-top-color: #ffbb00;
+            border-right-color: #ffcc33;
+            border-bottom-color: #ffaa00;
+            animation: spin 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+        }
+
+        .loading-text {
+            color: #ffbb00;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 15px rgba(255, 187, 0, 0.7);
+            text-transform: uppercase;
+        }
+
+        .loading-subtext {
+            color: rgba(255, 187, 0, 0.7);
+            font-size: 14px;
+            font-weight: 400;
+            text-align: center;
+            max-width: 250px;
+            line-height: 1.4;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            50% {
+                transform: rotate(180deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Loading Animation Styles */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        /* Плавный градиент потемнения */
+        .smooth-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(
+                circle at center,
+                rgba(0, 0, 0, 0) 0%,
+                rgba(0, 0, 0, 0.1) 15%,
+                rgba(0, 0, 0, 0.3) 30%,
+                rgba(0, 0, 0, 0.5) 45%,
+                rgba(0, 0, 0, 0.7) 60%,
+                rgba(0, 0, 0, 0.85) 75%,
+                rgba(0, 0, 0, 0.95) 90%,
+                rgba(0, 0, 0, 1) 100%
+            );
+            z-index: 50;
+            opacity: 0;
+            transform-origin: center;
+            transition: opacity 2.5s ease-in-out, transform 2.5s ease-in-out;
+        }
+
+        /* Чёрная пыль (резервный вариант) */
+        .black-dust {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(
+                circle at center,
+                rgba(0, 0, 0, 0.95) 0%,
+                rgba(0, 0, 0, 0.85) 20%,
+                rgba(0, 0, 0, 0.75) 40%,
+                rgba(0, 0, 0, 0.65) 60%,
+                rgba(0, 0, 0, 0.55) 80%,
+                rgba(0, 0, 0, 0.45) 100%
+            );
+            z-index: 60;
+            opacity: 0;
+            transform-origin: center;
+            transition: opacity 1.8s ease, transform 1.8s ease;
+        }
+
+        .loading-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        /* Свечение на горизонте */
+        .horizon-glow {
+            position: absolute;
+            bottom: 0;
+            width: 140%;
+            height: 300px;
+            background: radial-gradient(
+                ellipse at center bottom,
+                rgba(255, 187, 0, 0.4) 0%,
+                rgba(255, 187, 0, 0.25) 20%,
+                rgba(255, 187, 0, 0.15) 40%,
+                rgba(255, 187, 0, 0.05) 60%,
+                transparent 80%
+            );
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        /* Летающие подарки (все позади изображения) */
+        .gift-fly {
+            position: absolute;
+            transform-origin: center;
+            transition: opacity 1.5s ease;
+            z-index: 20; /* Подарки ниже изображения */
+        }
+
+        .gift-fly img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            filter: 
+                drop-shadow(0 0 20px rgba(255, 187, 0, 0.5))
+                brightness(0.8)
+                contrast(1.1)
+                opacity(0.7);
+        }
+
+        /* Изображение drops_move.png - постоянный размер 300px */
+        .drops-image {
+            position: absolute;
+            left: 50%;
+            bottom: -15%;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            z-index: 30;
+            transition: 
+                bottom 3.5s cubic-bezier(0.1, 0.7, 0.1, 1),
+                opacity 2s ease;
+            transform: translateX(-50%);
+            opacity: 1;
+            overflow: visible;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .drops-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: 
+                drop-shadow(0 0 60px #ffbb00)
+                drop-shadow(0 0 100px rgba(255, 187, 0, 0.9))
+                drop-shadow(0 0 150px rgba(255, 187, 0, 0.7))
+                drop-shadow(0 0 200px rgba(255, 187, 0, 0.5));
+            animation: gentleGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes gentleGlow {
+            0%, 100% {
+                filter: 
+                    drop-shadow(0 0 50px #ffbb00)
+                    drop-shadow(0 0 90px rgba(255, 187, 0, 0.9))
+                    drop-shadow(0 0 140px rgba(255, 187, 0, 0.7))
+                    drop-shadow(0 0 190px rgba(255, 187, 0, 0.5));
+            }
+            50% {
+                filter: 
+                    drop-shadow(0 0 70px #ffbb00)
+                    drop-shadow(0 0 110px rgba(255, 187, 0, 1))
+                    drop-shadow(0 0 160px rgba(255, 187, 0, 0.8))
+                    drop-shadow(0 0 220px rgba(255, 187, 0, 0.6));
+            }
+        }
+
+        /* Земля - опущена ниже для изображения 300px */
+        .ground {
+            position: absolute;
+            bottom: -170px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200%;
+            height: 250px;
+            background: #000;
+            border-radius: 50% 50% 0 0;
+            box-shadow: 
+                0 -25px 60px rgba(0, 0, 0, 0.95),
+                inset 0 30px 80px rgba(0, 0, 0, 1);
+            z-index: 40;
+        }
+
+        /* Текст Drops поверх градиента */
+        .drops-text-overlay {
+            position: fixed;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 70;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: opacity 2s ease, transform 2s ease;
+            pointer-events: none;
+        }
+
+        .drops-text-container {
+            font-size: 180px;
+            font-weight: 900;
+            color: #ffbb00;
+            text-align: center;
+            text-shadow: 
+                0 0 50px #ffbb00,
+                0 0 100px rgba(255, 187, 0, 0.95),
+                0 0 160px rgba(255, 187, 0, 0.8),
+                0 0 220px rgba(255, 187, 0, 0.5),
+                0 0 280px rgba(255, 187, 0, 0.3);
+            letter-spacing: 15px;
+            font-family: 'Arial Black', 'Helvetica Neue', sans-serif;
+            text-transform: uppercase;
+            max-width: 90vw;
+            padding: 0 20px;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            animation: textPulse 2s infinite alternate;
+            line-height: 1.1;
+        }
+
+        @keyframes textPulse {
+            from {
+                text-shadow: 
+                    0 0 45px #ffbb00,
+                    0 0 90px rgba(255, 187, 0, 0.9),
+                    0 0 150px rgba(255, 187, 0, 0.7),
+                    0 0 210px rgba(255, 187, 0, 0.4),
+                    0 0 270px rgba(255, 187, 0, 0.2);
+            }
+            to {
+                text-shadow: 
+                    0 0 55px #ffbb00,
+                    0 0 110px rgba(255, 187, 0, 1),
+                    0 0 170px rgba(255, 187, 0, 0.9),
+                    0 0 230px rgba(255, 187, 0, 0.6),
+                    0 0 290px rgba(255, 187, 0, 0.4);
+            }
+        }
+
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 768px) {
+            .drops-image {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .drops-image img {
+                filter: 
+                    drop-shadow(0 0 50px #ffbb00)
+                    drop-shadow(0 0 80px rgba(255, 187, 0, 0.9))
+                    drop-shadow(0 0 120px rgba(255, 187, 0, 0.7))
+                    drop-shadow(0 0 160px rgba(255, 187, 0, 0.5));
+            }
+            
+            @keyframes gentleGlow {
+                0%, 100% {
+                    filter: 
+                        drop-shadow(0 0 40px #ffbb00)
+                        drop-shadow(0 0 70px rgba(255, 187, 0, 0.9))
+                        drop-shadow(0 0 110px rgba(255, 187, 0, 0.7))
+                        drop-shadow(0 0 150px rgba(255, 187, 0, 0.5));
+                }
+                50% {
+                    filter: 
+                        drop-shadow(0 0 60px #ffbb00)
+                        drop-shadow(0 0 90px rgba(255, 187, 0, 1))
+                        drop-shadow(0 0 130px rgba(255, 187, 0, 0.8))
+                        drop-shadow(0 0 180px rgba(255, 187, 0, 0.6));
+                }
+            }
+            
+            .drops-text-container {
+                font-size: 90px;
+                letter-spacing: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .drops-image {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .drops-image img {
+                filter: 
+                    drop-shadow(0 0 40px #ffbb00)
+                    drop-shadow(0 0 70px rgba(255, 187, 0, 0.9))
+                    drop-shadow(0 0 100px rgba(255, 187, 0, 0.7))
+                    drop-shadow(0 0 140px rgba(255, 187, 0, 0.5));
+            }
+            
+            @keyframes gentleGlow {
+                0%, 100% {
+                    filter: 
+                        drop-shadow(0 0 30px #ffbb00)
+                        drop-shadow(0 0 60px rgba(255, 187, 0, 0.9))
+                        drop-shadow(0 0 90px rgba(255, 187, 0, 0.7))
+                        drop-shadow(0 0 130px rgba(255, 187, 0, 0.5));
+                }
+                50% {
+                    filter: 
+                        drop-shadow(0 0 50px #ffbb00)
+                        drop-shadow(0 0 80px rgba(255, 187, 0, 1))
+                        drop-shadow(0 0 110px rgba(255, 187, 0, 0.8))
+                        drop-shadow(0 0 160px rgba(255, 187, 0, 0.6));
+                }
+            }
+            
+            .drops-text-container {
+                font-size: 60px;
+                letter-spacing: 8px;
+                max-width: 95vw;
+            }
+        }
+
+        /* Кнопка перезапуска */
+        .restart-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: rgba(255, 187, 0, 0.1);
+            border: 2px solid rgba(255, 187, 0, 0.5);
+            color: #ffbb00;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .restart-button:hover {
+            background: rgba(255, 187, 0, 0.2);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <!-- Начальный экран загрузки со спиннером -->
+    <div id="initialLoadingScreen" class="initial-loading-screen">
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <div class="loading-text">Загрузка</div>
+            <div class="loading-subtext">Подготовка анимации...</div>
+        </div>
+    </div>
+
+    <!-- Экран анимации загрузки -->
+    <div id="loadingScreen" class="loading-screen" style="display: none;">
+        <!-- Плавный градиент потемнения -->
+        <div id="smoothGradient" class="smooth-gradient"></div>
+        
+        <!-- Чёрная пыль (резервный вариант) -->
+        <div id="blackDust" class="black-dust"></div>
+        
+        <div class="loading-container">
+            <!-- Свечение на горизонте -->
+            <div id="horizonGlow" class="horizon-glow"></div>
+            
+            <!-- Все летающие подарки (на заднем плане) -->
+            <div id="giftsContainer"></div>
+            
+            <!-- Изображение drops_move.png -->
+            <div id="dropsImage" class="drops-image">
+                <!-- Изображение будет загружено через JavaScript -->
+            </div>
+            
+            <!-- Земля -->
+            <div class="ground"></div>
+            
+            <!-- Текст Drops поверх градиента -->
+            <div id="dropsTextOverlay" class="drops-text-overlay">
+                <div class="drops-text-container">
+                    DROPS
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Кнопка перезапуска анимации -->
+    <button id="restartButton" class="restart-button" style="display: none;">
+        <i class="fas fa-redo"></i> Перезапустить анимацию
+    </button>
+
+    <script>
+        // Определение подарков (статичное расположение)
+        const gifts = [
+            // Верхний ряд (8 подарков)
+            { id: 1, x: 10, y: 8, rotation: 20, scale: 0.6, opacity: 0.8, zIndex: 1 },
+            { id: 2, x: 25, y: 10, rotation: -15, scale: 0.55, opacity: 0.75, zIndex: 1 },
+            { id: 3, x: 40, y: 7, rotation: 25, scale: 0.65, opacity: 0.85, zIndex: 1 },
+            { id: 4, x: 55, y: 9, rotation: -20, scale: 0.6, opacity: 0.8, zIndex: 1 },
+            { id: 5, x: 70, y: 12, rotation: 15, scale: 0.55, opacity: 0.75, zIndex: 1 },
+            { id: 6, x: 85, y: 8, rotation: -25, scale: 0.6, opacity: 0.8, zIndex: 1 },
+            { id: 7, x: 15, y: 15, rotation: 30, scale: 0.5, opacity: 0.7, zIndex: 1 },
+            { id: 8, x: 90, y: 14, rotation: -30, scale: 0.5, opacity: 0.7, zIndex: 1 },
+            
+            // Верхне-средний ряд (8 подарков)
+            { id: 9, x: 20, y: 25, rotation: -10, scale: 0.6, opacity: 0.8, zIndex: 1 },
+            { id: 10, x: 35, y: 28, rotation: 18, scale: 0.55, opacity: 0.75, zIndex: 1 },
+            { id: 11, x: 50, y: 30, rotation: -22, scale: 0.65, opacity: 0.85, zIndex: 1 },
+            { id: 12, x: 65, y: 25, rotation: 12, scale: 0.6, opacity: 0.8, zIndex: 1 },
+            { id: 13, x: 80, y: 28, rotation: -18, scale: 0.55, opacity: 0.75, zIndex: 1 },
+            { id: 14, x: 10, y: 32, rotation: 25, scale: 0.5, opacity: 0.7, zIndex: 1 },
+            { id: 15, x: 45, y: 22, rotation: -15, scale: 0.6, opacity: 0.8, zIndex: 1 },
+            { id: 16, x: 75, y: 20, rotation: 20, scale: 0.55, opacity: 0.75, zIndex: 1 },
+            
+            // Средний ряд (8 подарков)
+            { id: 17, x: 15, y: 45, rotation: -8, scale: 0.6, opacity: 0.85, zIndex: 1 },
+            { id: 18, x: 30, y: 50, rotation: 15, scale: 0.55, opacity: 0.75, zIndex: 1 },
+            { id: 19, x: 45, y: 48, rotation: -20, scale: 0.65, opacity: 0.9, zIndex: 1 },
+            { id: 20, x: 60, y: 45, rotation: 10, scale: 0.6, opacity: 0.8, zIndex: 1 },
+            { id: 21, x: 75, y: 50, rotation: -25, scale: 0.55, opacity: 0.75, zIndex: 1 },
+            { id: 22, x: 90, y: 46, rotation: 18, scale: 0.6, opacity: 0.85, zIndex: 1 },
+            { id: 23, x: 25, y: 42, rotation: -12, scale: 0.5, opacity: 0.7, zIndex: 1 },
+            { id: 24, x: 85, y: 42, rotation: 22, scale: 0.5, opacity: 0.7, zIndex: 1 },
+            
+            // Нижне-средний ряд (8 подарков)
+            { id: 25, x: 20, y: 65, rotation: 15, scale: 0.6, opacity: 0.8, zIndex: 1 },
+            { id: 26, x: 35, y: 68, rotation: -18, scale: 0.55, opacity: 0.75, zIndex: 1 },
+            { id: 27, x: 50, y: 70, rotation: 22, scale: 0.65, opacity: 0.9, zIndex: 1 },
+            { id: 28, x: 65, y: 65, rotation: -15, scale: 0.6, opacity: 0.8, zIndex: 1 },
+            { id: 29, x: 80, y: 68, rotation: 20, scale: 0.55, opacity: 0.75, zIndex: 1 },
+            { id: 30, x: 10, y: 70, rotation: -25, scale: 0.5, opacity: 0.7, zIndex: 1 },
+            { id: 31, x: 45, y: 62, rotation: 12, scale: 0.6, opacity: 0.85, zIndex: 1 },
+            { id: 32, x: 75, y: 60, rotation: -10, scale: 0.55, opacity: 0.75, zIndex: 1 },
+            
+            // Нижний ряд (8 подарков)
+            { id: 33, x: 15, y: 85, rotation: -20, scale: 0.6, opacity: 0.8, zIndex: 1 },
+            { id: 34, x: 30, y: 88, rotation: 25, scale: 0.55, opacity: 0.75, zIndex: 1 },
+            { id: 35, x: 45, y: 90, rotation: -18, scale: 0.65, opacity: 0.85, zIndex: 1 },
+            { id: 36, x: 60, y: 85, rotation: 15, scale: 0.6, opacity: 0.8, zIndex: 1 },
+            { id: 37, x: 75, y: 88, rotation: -22, scale: 0.55, opacity: 0.75, zIndex: 1 },
+            { id: 38, x: 90, y: 84, rotation: 20, scale: 0.6, opacity: 0.85, zIndex: 1 },
+            { id: 39, x: 25, y: 92, rotation: -30, scale: 0.5, opacity: 0.7, zIndex: 1 },
+            { id: 40, x: 85, y: 92, rotation: 30, scale: 0.5, opacity: 0.7, zIndex: 1 }
+        ];
+
+        // DOM элементы
+        const initialLoadingScreen = document.getElementById('initialLoadingScreen');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const smoothGradient = document.getElementById('smoothGradient');
+        const blackDust = document.getElementById('blackDust');
+        const horizonGlow = document.getElementById('horizonGlow');
+        const giftsContainer = document.getElementById('giftsContainer');
+        const dropsImage = document.getElementById('dropsImage');
+        const dropsTextOverlay = document.getElementById('dropsTextOverlay');
+        const restartButton = document.getElementById('restartButton');
+
+        // Переменные анимации
+        let dropsPosition = -15;
+        let giftFlyOpacity = 0;
+        let blackDustOpacity = 0;
+        let blackDustScale = 1;
+        let textOpacity = 0;
+        let textYPosition = 100;
+        let horizonGlowOpacity = 0;
+        let dropsOpacity = 1;
+        let gradientOpacity = 0;
+        let gradientSize = 0;
+
+        // Создание элементов подарков
+        function createGifts() {
+            giftsContainer.innerHTML = '';
+            
+            gifts.forEach(gift => {
+                const giftElement = document.createElement('div');
+                giftElement.className = 'gift-fly';
+                giftElement.id = `gift-${gift.id}`;
+                
+                // Создание элемента изображения
+                const img = document.createElement('img');
+                
+                // Пытаемся загрузить реальное изображение, если оно доступно
+                // В противном случае используем SVG заглушку
+                img.src = 'gift_fly.png'; // Путь к изображению подарка
+                img.alt = "Flying Gift";
+                img.onerror = function() {
+                    // Если изображение не найдено, создаем SVG
+                    const svgNS = "http://www.w3.org/2000/svg";
+                    const svg = document.createElementNS(svgNS, "svg");
+                    svg.setAttribute("viewBox", "0 0 100 100");
+                    svg.setAttribute("width", "100");
+                    svg.setAttribute("height", "100");
+                    
+                    // Коробка подарка
+                    const rect = document.createElementNS(svgNS, "rect");
+                    rect.setAttribute("x", "20");
+                    rect.setAttribute("y", "30");
+                    rect.setAttribute("width", "60");
+                    rect.setAttribute("height", "50");
+                    rect.setAttribute("fill", "#ff4444");
+                    rect.setAttribute("rx", "5");
+                    svg.appendChild(rect);
+                    
+                    // Лента подарка
+                    const ribbon1 = document.createElementNS(svgNS, "rect");
+                    ribbon1.setAttribute("x", "45");
+                    ribbon1.setAttribute("y", "25");
+                    ribbon1.setAttribute("width", "10");
+                    ribbon1.setAttribute("height", "60");
+                    ribbon1.setAttribute("fill", "#ffbb00");
+                    svg.appendChild(ribbon1);
+                    
+                    const ribbon2 = document.createElementNS(svgNS, "rect");
+                    ribbon2.setAttribute("x", "20");
+                    ribbon2.setAttribute("y", "55");
+                    ribbon2.setAttribute("width", "60");
+                    ribbon2.setAttribute("height", "10");
+                    ribbon2.setAttribute("fill", "#ffbb00");
+                    svg.appendChild(ribbon2);
+                    
+                    // Бант
+                    const bow1 = document.createElementNS(svgNS, "path");
+                    bow1.setAttribute("d", "M45,25 L50,20 L55,25 L50,30 Z");
+                    bow1.setAttribute("fill", "#ff9900");
+                    svg.appendChild(bow1);
+                    
+                    const bow2 = document.createElementNS(svgNS, "path");
+                    bow2.setAttribute("d", "M45,85 L50,80 L55,85 L50,90 Z");
+                    bow2.setAttribute("fill", "#ff9900");
+                    svg.appendChild(bow2);
+                    
+                    // Создание элемента изображения
+                    img.src = `data:image/svg+xml;base64,${btoa(new XMLSerializer().serializeToString(svg))}`;
+                };
+                
+                giftElement.appendChild(img);
+                giftsContainer.appendChild(giftElement);
+            });
+        }
+
+        // Создание изображения Drops
+        function createDropsImage() {
+            const img = document.createElement('img');
+            img.src = 'drops_move.png'; // Путь к изображению Drops
+            img.alt = "Drops";
+            img.onerror = function() {
+                // Если изображение не найдено, создаем SVG
+                const svgNS = "http://www.w3.org/2000/svg";
+                const svg = document.createElementNS(svgNS, "svg");
+                svg.setAttribute("viewBox", "0 0 300 300");
+                svg.setAttribute("width", "300");
+                svg.setAttribute("height", "300");
+                
+                // Определения для градиента и фильтра
+                const defs = document.createElementNS(svgNS, "defs");
+                
+                const radialGradient = document.createElementNS(svgNS, "radialGradient");
+                radialGradient.setAttribute("id", "grad");
+                radialGradient.setAttribute("cx", "50%");
+                radialGradient.setAttribute("cy", "50%");
+                radialGradient.setAttribute("r", "50%");
+                
+                const stop1 = document.createElementNS(svgNS, "stop");
+                stop1.setAttribute("offset", "0%");
+                stop1.setAttribute("stop-color", "#ffbb00");
+                stop1.setAttribute("stop-opacity", "0.9");
+                radialGradient.appendChild(stop1);
+                
+                const stop2 = document.createElementNS(svgNS, "stop");
+                stop2.setAttribute("offset", "100%");
+                stop2.setAttribute("stop-color", "#ff8800");
+                stop2.setAttribute("stop-opacity", "0.7");
+                radialGradient.appendChild(stop2);
+                
+                defs.appendChild(radialGradient);
+                
+                const filter = document.createElementNS(svgNS, "filter");
+                filter.setAttribute("id", "glow");
+                filter.setAttribute("x", "-50%");
+                filter.setAttribute("y", "-50%");
+                filter.setAttribute("width", "200%");
+                filter.setAttribute("height", "200%");
+                
+                const feGaussianBlur = document.createElementNS(svgNS, "feGaussianBlur");
+                feGaussianBlur.setAttribute("stdDeviation", "10");
+                feGaussianBlur.setAttribute("result", "blur");
+                filter.appendChild(feGaussianBlur);
+                
+                const feMerge = document.createElementNS(svgNS, "feMerge");
+                const feMergeNode1 = document.createElementNS(svgNS, "feMergeNode");
+                feMergeNode1.setAttribute("in", "blur");
+                feMerge.appendChild(feMergeNode1);
+                
+                const feMergeNode2 = document.createElementNS(svgNS, "feMergeNode");
+                feMergeNode2.setAttribute("in", "SourceGraphic");
+                feMerge.appendChild(feMergeNode2);
+                
+                filter.appendChild(feMerge);
+                defs.appendChild(filter);
+                
+                svg.appendChild(defs);
+                
+                // Основной круг
+                const circle1 = document.createElementNS(svgNS, "circle");
+                circle1.setAttribute("cx", "150");
+                circle1.setAttribute("cy", "150");
+                circle1.setAttribute("r", "120");
+                circle1.setAttribute("fill", "url(#grad)");
+                circle1.setAttribute("filter", "url(#glow)");
+                svg.appendChild(circle1);
+                
+                // Внутренний круг
+                const circle2 = document.createElementNS(svgNS, "circle");
+                circle2.setAttribute("cx", "150");
+                circle2.setAttribute("cy", "150");
+                circle2.setAttribute("r", "100");
+                circle2.setAttribute("fill", "#ffaa00");
+                svg.appendChild(circle2);
+                
+                // Текст DROPS
+                const text = document.createElementNS(svgNS, "text");
+                text.setAttribute("x", "150");
+                text.setAttribute("y", "160");
+                text.setAttribute("text-anchor", "middle");
+                text.setAttribute("fill", "white");
+                text.setAttribute("font-family", "Arial");
+                text.setAttribute("font-size", "40");
+                text.setAttribute("font-weight", "bold");
+                text.textContent = "DROPS";
+                svg.appendChild(text);
+                
+                img.src = `data:image/svg+xml;base64,${btoa(new XMLSerializer().serializeToString(svg))}`;
+            };
+            
+            dropsImage.appendChild(img);
+        }
+
+        // Функция для запуска анимации загрузки
+        function startLoadingAnimation() {
+            // Сначала скрываем спиннер
+            initialLoadingScreen.style.display = 'none';
+            loadingScreen.style.display = 'flex';
+            
+            // Создаем изображение Drops
+            createDropsImage();
+            
+            // Создаем подарки
+            createGifts();
+            
+            // Начальные значения
+            dropsPosition = -15;
+            giftFlyOpacity = 0;
+            blackDustOpacity = 0;
+            blackDustScale = 1;
+            textOpacity = 0;
+            textYPosition = 100;
+            horizonGlowOpacity = 0;
+            dropsOpacity = 1;
+            gradientOpacity = 0;
+            gradientSize = 0;
+            
+            // Обновляем стили
+            updateStyles();
+            
+            // Ждем немного для плавного перехода
+            setTimeout(() => {
+                // Стадия 1: Изображение появляется из-за горизонта и поднимается
+                setTimeout(() => {
+                    let dropsPos = -15;
+                    let glow = 0;
+                    let opacity = 1;
+                    let giftOpacity = 0;
+                    
+                    const risesInterval = setInterval(() => {
+                        dropsPos += 0.4;
+                        glow += 0.008;
+                        giftOpacity += 0.015;
+                        
+                        dropsPosition = dropsPos;
+                        horizonGlowOpacity = glow;
+                        dropsOpacity = opacity;
+                        giftFlyOpacity = Math.min(giftOpacity, 1);
+                        
+                        updateStyles();
+                        
+                        if (dropsPos >= 25) {
+                            clearInterval(risesInterval);
+                            
+                            // Стадия 2: Плавный градиент заполняет экран
+                            setTimeout(() => {
+                                let dustOp = 0;
+                                let gradOp = 0;
+                                let gradSize = 0;
+                                
+                                const gradientInterval = setInterval(() => {
+                                    dustOp += 0.03;
+                                    gradOp += 0.02;
+                                    gradSize += 0.02;
+                                    
+                                    blackDustOpacity = dustOp;
+                                    gradientOpacity = gradOp;
+                                    gradientSize = gradSize;
+                                    
+                                    updateStyles();
+                                    
+                                    if (gradOp >= 1) {
+                                        clearInterval(gradientInterval);
+                                        
+                                        // Стадия 3: Текст появляется поверх градиента
+                                        let textOp = 0;
+                                        let textY = 100;
+                                        
+                                        const textInterval = setInterval(() => {
+                                            textOp += 0.025;
+                                            textY -= 1.5;
+                                            textOpacity = textOp;
+                                            textYPosition = textY;
+                                            
+                                            updateStyles();
+                                            
+                                            if (textOp >= 1) {
+                                                clearInterval(textInterval);
+                                                // Завершение анимации
+                                                setTimeout(() => {
+                                                    restartButton.style.display = 'block';
+                                                }, 2500);
+                                            }
+                                        }, 30);
+                                    }
+                                }, 40);
+                            }, 300);
+                        }
+                    }, 25);
+                }, 100);
+            }, 300);
+        }
+
+        // Функция обновления стилей
+        function updateStyles() {
+            // Обновляем положение drops изображения
+            dropsImage.style.bottom = `${dropsPosition}%`;
+            dropsImage.style.opacity = dropsOpacity;
+            
+            // Обновляем прозрачность подарков
+            document.querySelectorAll('.gift-fly').forEach((giftElement, index) => {
+                if (index < gifts.length) {
+                    const gift = gifts[index];
+                    giftElement.style.opacity = giftFlyOpacity * gift.opacity;
+                    giftElement.style.left = `${gift.x}%`;
+                    giftElement.style.top = `${gift.y}%`;
+                    giftElement.style.transform = `translate(-50%, -50%) rotate(${gift.rotation}deg) scale(${gift.scale})`;
+                }
+            });
+            
+            // Обновляем свечение горизонта
+            horizonGlow.style.opacity = horizonGlowOpacity * 0.8;
+            
+            // Обновляем чёрную пыль
+            blackDust.style.opacity = blackDustOpacity;
+            blackDust.style.transform = `scale(${blackDustScale})`;
+            
+            // Обновляем градиент
+            smoothGradient.style.opacity = gradientOpacity;
+            smoothGradient.style.transform = `scale(${1 + gradientSize})`;
+            
+            // Обновляем текст
+            dropsTextOverlay.style.opacity = textOpacity;
+            dropsTextOverlay.style.transform = `translateY(${textYPosition}px)`;
+        }
+
+        // Функция сброса анимации
+        function resetAnimation() {
+            // Скрываем кнопку перезапуска
+            restartButton.style.display = 'none';
+            
+            // Показываем начальный спиннер
+            initialLoadingScreen.style.display = 'flex';
+            loadingScreen.style.display = 'none';
+            
+            // Очищаем содержимое
+            dropsImage.innerHTML = '';
+            giftsContainer.innerHTML = '';
+            
+            // Ждем немного и запускаем анимацию снова
+            setTimeout(() => {
+                startLoadingAnimation();
+            }, 1000);
+        }
+
+        // Запуск анимации при загрузке страницы
+        window.addEventListener('load', () => {
+            // Имитируем загрузку данных
+            setTimeout(() => {
+                startLoadingAnimation();
+            }, 1500);
+        });
+
+        // Обработчик для кнопки перезапуска
+        restartButton.addEventListener('click', resetAnimation);
+    </script>
+</body>
+</html>

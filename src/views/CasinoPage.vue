@@ -44,7 +44,6 @@
   </template>
   
   <script>
-  import { createClient } from '@supabase/supabase-js'
   import  nft1  from '@/assets/nft1.png'
   import  nft2  from '@/assets/nft2.png'
   import  nft5  from '@/assets/nft5.png'
@@ -55,9 +54,8 @@
   import  nft8  from '@/assets/nft8.png'
   import  nft9  from '@/assets/nft9.png'
   import  nft10  from '@/assets/nft10.png'
-  const supabaseUrl = 'https://jgkfvqiophgvswqvatbx.supabase.co'
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impna2Z2cWlvcGhndnN3cXZhdGJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4ODI5NTMsImV4cCI6MjA1NTQ1ODk1M30.GTN1V9NJwnmwy8GmXOOz3SxepV7n4yVKkhLYZTYuFEQ'
-  const supabase = createClient(supabaseUrl, supabaseKey)
+  import supabase from '../../services/supabase'
+
   
   export default {
     name: 'CasinoPage',

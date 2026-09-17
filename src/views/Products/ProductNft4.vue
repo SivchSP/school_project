@@ -31,13 +31,9 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import frog1 from '@/assets/nft4.png';
 import { useScoreStore } from '@/stores/score';
-import { createClient } from '@supabase/supabase-js';
+import supabase from '../../../services/supabase';
 import frog from '@/assets/frog1.png';
 
-
-const supabaseUrl = 'https://jgkfvqiophgvswqvatbx.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impna2Z2cWlvcGhndnN3cXZhdGJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4ODI5NTMsImV4cCI6MjA1NTQ1ODk1M30.GTN1V9NJwnmwy8GmXOOz3SxepV7n4yVKkhLYZTYuFEQ';
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const router = useRouter();
 const scoreStore = useScoreStore();

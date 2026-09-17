@@ -167,29 +167,32 @@ PROGRAM{
   recv_internal PROC:<{
     //  msg_value in_msg in_msg_body
     2 1 BLKDROP2	//  in_msg_body
-    LDMSGADDR	//  sender in_msg_body
-    c4 PUSH	//  sender in_msg_body _7
-    CTOS	//  sender in_msg_body admin_address
-    s1 s2 XCHG	//  in_msg_body sender admin_address
-    SDEQ	//  in_msg_body _9
-    NOT	//  in_msg_body _10
+    DUP	//  in_msg_body in_msg_body
+    SEMPTY	//  in_msg_body _3
     IFJMP:<{	//  in_msg_body
       DROP	// 
     }>	//  in_msg_body
-    LDMSGADDR	//  recipient in_msg_body
-    LDVARUINT16	//  recipient _47 _46
-    DROP	//  recipient amount
-    0 PUSHINT	//  recipient amount _18=0
-    24 PUSHINT	//  recipient amount _18=0 _19=24
-    NEWC	//  recipient amount _18=0 _19=24 _20
-    6 STU	//  recipient amount _18=0 _22
-    s0 s3 XCHG2	//  _18=0 amount _22 recipient
-    STSLICER	//  _18=0 amount _23
-    SWAP	//  _18=0 _23 amount
-    STVARUINT16	//  _18=0 _24
-    107 STU	//  _38
-    ENDC	//  msg
-    64 PUSHINT	//  msg _40=64
-    SENDRAWMSG
+    32 LDU	//  op in_msg_body
+    SWAP	//  in_msg_body op
+    1 EQINT	//  in_msg_body _9
+    IF:<{	//  in_msg_body
+      LDVARUINT16	//  amount in_msg_body
+      LDMSGADDR	//  amount _46 _45
+      DROP	//  amount recipient_addr
+      0 PUSHINT	//  amount recipient_addr _17=0
+      24 PUSHINT	//  amount recipient_addr _17=0 _18=24
+      NEWC	//  amount recipient_addr _17=0 _18=24 _19
+      6 STU	//  amount recipient_addr _17=0 _21
+      ROT	//  amount _17=0 _21 recipient_addr
+      STSLICER	//  amount _17=0 _22
+      ROT	//  _17=0 _22 amount
+      STVARUINT16	//  _17=0 _23
+      107 STU	//  _37
+      ENDC	//  msg
+      64 PUSHINT	//  msg _39=64
+      SENDRAWMSG
+    }>ELSE<{
+      DROP	// 
+    }>
   }>
 }END>c

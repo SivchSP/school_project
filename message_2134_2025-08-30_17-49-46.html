@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drops — современный презентационный баннер</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 1200px;
+            height: 720px;
+            background: #050505;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* ЗВЁЗДЫ (фон) — ЯРЧЕ */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.45); /* Увеличено с 0.25 до 0.45 */
+            font-family: monospace;
+            user-select: none;
+            pointer-events: none;
+            font-size: 8px;
+        }
+
+        /* ЛЕВАЯ ЧАСТЬ — ТЕЛЕФОН */
+        .phone-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .phone-mock {
+            width: 350px;
+            height: auto;
+            filter: drop-shadow(0 25px 45px rgba(0, 0, 0, 0.6));
+            transition: transform 0.25s ease;
+        }
+
+        .phone-mock:hover {
+            transform: scale(1.02);
+        }
+
+        /* ПРАВАЯ ЧАСТЬ — КОНТЕНТ */
+        .content-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-right: 60px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* БРЕНДИНГ */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .brand-dot {
+            width: 6px;
+            height: 6px;
+            background: #ffbb00;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #ffbb00;
+        }
+
+        .brand-line {
+            width: 30px;
+            height: 0.5px;
+            background: linear-gradient(90deg, rgba(255, 187, 0, 0.5), transparent);
+        }
+
+        .brand-text {
+            font-size: 10px;
+            font-weight: 400;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        /* ЗАГОЛОВОК */
+        .title {
+            font-size: 74px;
+            font-weight: 680;
+            letter-spacing: -3px;
+            color: white;
+            line-height: 0.9;
+            margin-bottom: 24px;
+        }
+
+        .title .accent {
+            color: #ffbb00;
+        }
+
+        /* ОПИСАНИЕ */
+        .description {
+            font-size: 16px;
+            font-weight: 380;
+            color: rgba(255, 255, 255, 0.55);
+            line-height: 1.5;
+            margin-bottom: 36px;
+            max-width: 380px;
+        }
+
+        /* ОВАЛ С ЭЛЕМЕНТАМИ */
+        .oval-container {
+            background: rgba(10, 10, 10, 0.4);
+            backdrop-filter: blur(12px);
+            border: 0.5px solid rgba(255, 187, 0, 0.2);
+            border-radius: 100px;
+            padding: 18px 28px;
+            width: fit-content;
+            margin-bottom: 36px;
+        }
+
+        .oval-items {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .oval-item {
+            text-align: center;
+        }
+
+        .oval-icon {
+            font-size: 24px;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .oval-label {
+            font-size: 11px;
+            font-weight: 450;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .oval-divider {
+            width: 1px;
+            height: 24px;
+            background: rgba(255, 187, 0, 0.2);
+        }
+
+        .stat-number-infinity {
+            font-size: 28px;
+            font-weight: 600;
+            color: #ffbb00;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        /* СТАТИСТИКА / ДОП. БЛОК */
+        .stats {
+            display: flex;
+            gap: 48px;
+            align-items: flex-end;
+        }
+
+        .stat-item {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Стиль для иконки ton-yellow.png — маленькая, над текстом */
+        .stat-icon-small {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffbb00;
+            letter-spacing: -0.3px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* СВЕЧЕНИЕ */
+        .glow-right {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 187, 0, 0.08), transparent 70%);
+            filter: blur(60px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* РАМКА */
+        .frame {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 0.5px solid rgba(255, 255, 255, 0.05);
+            border-radius: 32px;
+            pointer-events: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stars" id="starsContainer"></div>
+    <div class="glow-right"></div>
+
+    <div class="phone-section">
+        <img class="phone-mock" src="app_screen.png" alt="App Screen">
+    </div>
+
+    <div class="content-section">
+        <div class="brand">
+            <div class="brand-dot"></div>
+            <div class="brand-line"></div>
+            <div class="brand-text">DROPS CORE</div>
+        </div>
+
+        <div class="title">
+            <span class="accent">D</span>rops
+        </div>
+
+        <div class="description">
+            Instant payouts, zero fees,<br>
+            infinite possibilities. Your daily drops, redefined.
+        </div>
+
+        <div class="oval-container">
+            <div class="oval-items">
+                <div class="oval-item">
+                    <div class="oval-icon">⚡</div>
+                    <div class="oval-label">instant</div>
+                </div>
+                <div class="oval-divider"></div>
+                <div class="oval-item">
+                    <div class="oval-icon">🔒</div>
+                    <div class="oval-label">secure</div>
+                </div>
+                <div class="oval-divider"></div>
+                <div class="oval-item">
+                    <div class="oval-icon">🌍</div>
+                    <div class="oval-label">global</div>
+                </div>
+                <div class="oval-divider"></div>
+                <div class="oval-item">
+                    <div class="stat-number-infinity">∞</div>
+                    <div class="oval-label">limits</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <!-- 0% fees — без иконки, только текст -->
+            <div class="stat-item">
+                <div class="stat-number">0%</div>
+                <div class="stat-label">fees</div>
+            </div>
+
+            <!-- 24/7 support — без иконки -->
+            <div class="stat-item">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">support</div>
+            </div>
+
+            <!-- rewards: маленькая иконка ton-yellow.png над текстом -->
+            <div class="stat-item">
+                <img class="stat-icon-small" src="ton-yellow.png" alt="ton">
+                <div class="stat-label">rewards</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="frame"></div>
+
+    <script>
+        // ЗВЁЗДЫ — СДЕЛАЛ ЯРЧЕ
+        (function() {
+            const container = document.getElementById('starsContainer');
+            const starCount = 70;
+            
+            for (let i = 0; i < starCount; i++) {
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const size = 4 + Math.random() * 12;
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = x + '%';
+                star.style.top = y + '%';
+                star.style.fontSize = size + 'px';
+                // Увеличил базовую яркость: было 0.08 + 0.3 = макс 0.38, стало 0.15 + 0.4 = макс 0.55
+                star.style.opacity = 0.15 + Math.random() * 0.4;
+                star.textContent = '✦';
+                container.appendChild(star);
+            }
+        })();
+    </script>
+</body>
+</html>

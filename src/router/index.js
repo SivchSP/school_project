@@ -14,12 +14,14 @@ import ProductNft5 from '@/views/Products/ProductNft5.vue'
 import MyNft from '@/views/MyNft.vue'
 import CasinoPage from '@/views/CasinoPage.vue'
 import TonConnectTopup from '@/views/ton-connect-topup.vue'
+import MyOffers from '@/views/MyOffers.vue'
 
 
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [  
+
     {
       path: '/mynft',
       name: 'MY-NFT',
@@ -62,6 +64,11 @@ const router = createRouter({
       props: true // This allows passing route params as props
     },
     {
+      path: '/myoffers',
+      name: 'MyOffers',
+      component: MyOffers,
+    },
+    {
       path: '/register',
       name: 'Register',
       component: Register,
@@ -71,11 +78,7 @@ const router = createRouter({
       name: 'CasinoPage',
       component: CasinoPage,
     },
-    {
-      path: '/shop',
-      name: 'Shop',
-      component: Shop,
-    },
+
     {
       path: '/pensia',
       name: 'Pensia',
@@ -105,6 +108,12 @@ const router = createRouter({
       path: '/friends',
       name: 'friends',
       component: () => import('../views/FriendsView.vue'),
+    },
+    {
+      path: '/shop/:itemId?',
+      name: 'Shop',
+      component: Shop,
+      props: true
     },
   ],
 })

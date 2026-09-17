@@ -1,23 +1,28 @@
-(int) equal_slices (slice a, slice b) asm "SDEQ";
-
 () recv_internal(int msg_value, cell in_msg, slice in_msg_body) impure {
-    ;; 1. Проверяем, что отправитель — администратор
-    slice sender = in_msg_body~load_msg_addr();
-    slice admin_address = get_data().begin_parse();
-    if (~ equal_slices(sender, admin_address)) {
-        return (); ;; Если не админ — ничего не делаем
+    ;; Проверяем, что тело сообщения не пустое
+    if (in_msg_body.slice_empty?()) {
+        return ();
     }
 
-    ;; 2. Получаем адрес получателя и сумму
-    slice recipient = in_msg_body~load_msg_addr();
-    int amount = in_msg_body~load_coins();
+    ;; Читаем op-code (для фильтрации сообщений)
+    int op = in_msg_body~load_uint(32); 
 
-    ;; 3. Отправляем TON на указанный адрес
-    var msg = begin_cell()
-        .store_uint(0x18, 6) ;; флаги (обычный перевод)
-        .store_slice(recipient)
-        .store_coins(amount)
-        .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1) ;; пустое тело сообщения
+    ;; Если op-code = 0x12345678 (пример кастомного кода)
+    if (op == 0x12345678) {
+        ;; Читаем сообщение от отправителя
+        slice sender_address = in_msg_body~load_msg_addr();
+        slice message = in_msg_body~load_slice(in_msg_body.slice_bits());
+
+        ;; Отправляем ответную транзакцию
+        var msg = begin_cell()
+            .store_uint(0x18, 6) ;; флаги
+            .store_slice(sender_address) ;; кому отправляем
+            .store_coins(1 * 10000000) ;; 0.01 TON
+            .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1) ;; default message headers
+            .store_slice("Hello from contract! Your message: ")
+            .store_slice(message)
         .end_cell();
-    send_raw_message(msg, 64); ;; отправляем с оставшимся газом
+
+        send_raw_message(msg, 3); ;; mode 3 = pay fees separately
+    }
 }

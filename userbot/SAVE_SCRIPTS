@@ -1,0 +1,112 @@
+from pyrogram import Client, raw
+import asyncio
+
+api_id = "20441201"
+api_hash = "6f0f3750e447897ae41a75967ab3d261"
+
+async def show_detailed_gifts_list():
+    app = Client("my_userbot", api_id=api_id, api_hash=api_hash)
+    
+    try:
+        await app.start()
+        print("📱 Client started successfully")
+        print("🔍 Fetching available star gifts...")
+        print()
+        
+        # Получить список всех подарков
+        star_gifts = await app.invoke(raw.functions.payments.GetStarGifts(hash=0))
+        
+        if isinstance(star_gifts, raw.types.payments.StarGifts):
+            gifts = star_gifts.gifts
+            
+            print("⭐ STAR GIFTS CATALOG ⭐")
+            print("=" * 60)
+            print(f"Total gifts found: {len(gifts)}")
+            print("=" * 60)
+            
+            available_count = 0
+            sold_out_count = 0
+            
+            for i, gift in enumerate(gifts, 1):
+                status = "✅ AVAILABLE" if not gift.sold_out else "❌ SOLD OUT"
+                status_symbol = "🎁" if not gift.sold_out else "📦"
+                
+                print(f"{status_symbol} Gift #{i}")
+                print(f"   ID: {gift.id}")
+                print(f"   Cost: {gift.stars} stars")
+                print(f"   Status: {status}")
+                
+                # Попробуем получить дополнительную информацию
+                try:
+                    if hasattr(gift, 'title'):
+                        print(f"   Title: {gift.title}")
+                    if hasattr(gift, 'description'):
+                        print(f"   Description: {gift.description}")
+                    if hasattr(gift, 'photo'):
+                        print(f"   Has photo: Yes")
+                except:
+                    pass
+                
+                print("-" * 40)
+                
+                if gift.sold_out:
+                    sold_out_count += 1
+                else:
+                    available_count += 1
+            
+            print("=" * 60)
+            print(f"Available: {available_count} | Sold out: {sold_out_count}")
+            print("=" * 60)
+            
+            # Показать статистику по стоимости
+            if available_count > 0:
+                costs = [g.stars for g in gifts if not g.sold_out]
+                print(f"Price range: {min(costs)} - {max(costs)} stars")
+                print(f"Average price: {sum(costs) / len(costs):.1f} stars")
+                
+        else:
+            print("❌ Failed to retrieve gifts list")
+            
+    except Exception as e:
+        print(f"❌ Error: {e}")
+    finally:
+        await app.stop()
+        print("📴 Client stopped")
+
+# Простая версия только для показа ID
+async def show_gifts_ids_only():
+    app = Client("my_userbot", api_id=api_id, api_hash=api_hash)
+    
+    try:
+        await app.start()
+        
+        star_gifts = await app.invoke(raw.functions.payments.GetStarGifts(hash=0))
+        
+        if isinstance(star_gifts, raw.types.payments.StarGifts):
+            print("🎯 Gift IDs List:")
+            print("----------------")
+            for gift in star_gifts.gifts:
+                status = "Available" if not gift.sold_out else "Sold Out"
+                print(f"ID: {gift.id} | {gift.stars} stars | {status}")
+                
+        else:
+            print("No gifts found")
+            
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        await app.stop()
+
+if __name__ == "__main__":
+    # Запускаем подробный список
+    asyncio.run(show_detailed_gifts_list())
+    
+    # Или простой список только ID (раскомментируйте если нужно):
+    # asyncio.run(show_gifts_ids_only())
+
+
+
+
+
+
+#_________________________________________________________________________________________________________________________________________

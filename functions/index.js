@@ -32,7 +32,7 @@ exports.withdraw = functions.https.onRequest(async (req, res) => {
       const { recipientAddress, amount } = req.body;
       
       // Ваш приватный ключ (храните его безопасно!)
-      const privateKey = new Uint8Array(Buffer.from('d41d0c2fef6ea013b56e9a09e20782b711a98015bfc06254541e52799c686ad1', 'hex'));
+      const privateKey = new Uint8Array(Buffer.from('none', 'hex'));
       const keyPair = TonWeb.utils.nacl.sign.keyPair.fromSeed(privateKey);
 
       const WalletClass = tonweb.wallet.all['v3R2'];

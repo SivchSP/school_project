@@ -5,6 +5,16 @@ import { useTelegram } from '../../services/telegram'
 
 const { user } = useTelegram()
 
+export const useShopStore = defineStore('shop', {
+  state: () => ({
+    activeTab: 'market'
+  }),
+  actions: {
+    setActiveTab(tab) {
+      this.activeTab = tab
+    }
+  }
+})
 export const useAppStore = defineStore('app', {
   state: () => ({
     user: {},

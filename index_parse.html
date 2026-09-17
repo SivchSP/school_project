@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Монета — концентрированные цвета</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: rgb(41, 41, 41);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .coin {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            position: relative;
+            /* Центральный диск — концентрированные оттенки ffbb00 */
+            background: radial-gradient(circle at 50% 50%, 
+                #ffbb00 0%,      /* яркий жёлтый */
+                #e69c00 70%,     /* насыщенный оранжево-жёлтый */
+                #b37400 100%     /* тёмный золотой */
+            );
+            box-shadow: 0 18px 22px -12px rgba(0, 0, 0, 0.5);
+            cursor: default;
+            transition: transform 0.2s ease;
+        }
+
+        /* Кант — уменьшенной ширины, плавный объём */
+        .coin::before {
+            content: '';
+            position: absolute;
+            top: -10px;           /* было -16px */
+            left: -10px;
+            width: calc(100% + 20px);  /* было +32px */
+            height: calc(100% + 20px);
+            border-radius: 50%;
+            background: radial-gradient(circle at 50% 50%,
+                transparent 0%,
+                transparent 45%,              /* прозрачная область под диск */
+                #b37400 52%,                   /* тёмное основание канта */
+                #ffbb00 60%,                     /* пик светлоты */
+                #e69c00 68%,                     /* спуск */
+                #b37400 70%,                     /* затемнение */
+                transparent 85%                   /* внешний край прозрачен (было 90%) */
+            );
+            pointer-events: none;
+            z-index: 2;
+            filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Мягкий блик сверху (очень слабый) */
+        .coin::after {
+            content: '';
+            position: absolute;
+            top: -8px;            /* было -12px */
+            left: -8px;
+            width: calc(100% + 16px);  /* было +24px */
+            height: calc(100% + 16px);
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%,
+                rgba(255, 240, 170, 0.25) 0%,
+                transparent 40%
+            );
+            pointer-events: none;
+            z-index: 3;
+            mix-blend-mode: overlay;
+        }
+
+        /* Лёгкое увеличение при наведении */
+        .coin:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+    <div class="coin"></div>
+</body>
+</html>

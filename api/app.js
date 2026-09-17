@@ -12,25 +12,34 @@ export async function fetchTasks() {
 
 
 export async function getOrCreateUser() {
-  const pontentialUser = await supabase
+  // 1. Пытаемся найти пользователя
+  const { data, error } = await supabase
     .from('users')
-    .select()
-    .eq('telegram', MY_ID)
+    .select('*')
+    .eq('telegram', MY_ID);
 
-  if (pontentialUser.data.length !== 0) {
-    return pontentialUser.data[0]
+  if (error) {
+    console.error('Ошибка при поиске пользователя:', error);
+    throw error; // Можно обработать иначе, если нужно
   }
 
+  // 2. Если пользователь найден — возвращаем его
+  if (data && data.length > 0) {
+    return data[0];
+  }
+
+  // 3. Если пользователя нет — создаём нового
   const newUser = {
+    id:0,
     telegram: MY_ID,
     friends: {},
     tasks: {},
     score: 0,
     available_clicks: 100,
-    maxClicks: 100,
+    maxclicks: 100,
     pensia_task: {},
-    name:{},
-    password: {},
+    name: null,
+    password: null,
     register: {},
     nft1: 0,
     nft2: 0,
@@ -47,13 +56,106 @@ export async function getOrCreateUser() {
     transfers_history: [],
     market_history: [],
     score_click: 1,
-    boost: 0
+    boost: 0,
+    boost_1: false,
+    boost_2: false,
+    boost_3: false,
+    boost_4: false,
+    boost_5: false,
+    last_click_update: "2025-01-01 00:00:00.031+00",
+    ton_balance: 0,
+    nft_links: [],
+  };
 
+  // 4. Сохраняем нового пользователя в базу
+  const { error: insertError } = await supabase.from('users').insert(newUser);
+
+  if (insertError) {
+    console.error('Ошибка при создании пользователя:', insertError);
+    throw insertError;
   }
 
-  await supabase.from('users').insert(newUser)
-  return newUser
+  return newUser;
 }
+
+// НОВАЯ ФУНКЦИЯ: Получение или создание пользователя по Telegram ID
+export async function getOrCreateUserByTelegramId(telegramId) {
+  try {
+    // 1. Пытаемся найти пользователя по telegram ID
+    const { data: existingUsers, error: searchError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('telegram', telegramId);
+
+    if (searchError) {
+      console.error('Ошибка при поиске пользователя:', searchError);
+      throw searchError;
+    }
+
+    // 2. Если пользователь найден — возвращаем его
+    if (existingUsers && existingUsers.length > 0) {
+      console.log('Пользователь найден:', existingUsers[0]);
+      return existingUsers[0];
+    }
+
+    // 3. Если пользователя нет — создаём нового
+    const newUser = {
+      telegram: telegramId,
+      friends: {},
+      tasks: {},
+      score: 0,
+      available_clicks: 100,
+      maxclicks: 100,
+      pensia_task: {},
+      name: `user_${telegramId}`,
+      password: null,
+      register: {},
+      nft1: 0,
+      nft2: 0,
+      nft3: 0,
+      nft4: 0,
+      nft5: 0,
+      nft6: 0,
+      nft7: 0,
+      nft8: 0,
+      nft9: 0,
+      nft10: 0,
+      owner_id: {},
+      sales_history: [],
+      transfers_history: [],
+      market_history: [],
+      score_click: 1,
+      boost: 0,
+      boost_1: false,
+      boost_2: false,
+      boost_3: false,
+      boost_4: false,
+      boost_5: false,
+      last_click_update: "2025-01-01 00:00:00.031+00",
+      ton_balance: 0,
+      nft_links: [],
+    };
+
+    // 4. Сохраняем нового пользователя в базу
+    const { data: createdUser, error: insertError } = await supabase
+      .from('users')
+      .insert([newUser])
+      .select()
+      .single();
+
+    if (insertError) {
+      console.error('Ошибка при создании пользователя:', insertError);
+      throw insertError;
+    }
+
+    console.log('Новый пользователь создан:', createdUser);
+    return createdUser;
+  } catch (error) {
+    console.error('Ошибка в getOrCreateUserByTelegramId:', error);
+    throw error;
+  }
+}
+
 // Добавим новую функцию для получения данных пользователя по имени
 export async function getUserByName(username) {
   const { data, error } = await supabase
@@ -86,18 +188,20 @@ export async function updateBoost(username, newBoost) {
 
 export async function updateScore(score, username) {
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('users')
       .update({ score })
       .eq('name', username)
+      .select('*') // ДОБАВЬТЕ ЭТО - возвращаем все поля
       
     if (error) throw error
-    console.log('Счет успешно обновлен для пользователя:', username)
+    console.log('Счет успешно обновлен для пользователя:', username, 'with boost:', data[0]?.boost)
+    return data[0] // Возвращаем обновленные данные
   } catch (error) {
     console.error('Ошибка при обновлении счета:', error)
+    throw error
   }
 }
-
 export async function registerRef(userName, refId) {
   // 1. Получаем данные реферера
   const { data: refData } = await supabase

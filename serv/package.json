@@ -1,0 +1,20 @@
+{
+  "name": "ton-withdraw-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node api/withdraw.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "@orbs-network/ton-access": "^2.3.3",
+    "@ton/crypto": "^3.3.0",
+    "@ton/ton": "^15.3.0",
+    "@ton/core": "^0.61.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
